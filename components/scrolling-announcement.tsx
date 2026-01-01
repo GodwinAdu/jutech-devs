@@ -4,16 +4,18 @@ import { motion } from "framer-motion"
 
 export function ScrollingAnnouncement() {
   const announcements = [
-    "🚀 Full-Stack Development: Custom web & mobile apps with modern tech stacks",
-    "💻 SaaS Solutions: Enterprise-grade software as a service platforms",
-    "📱 Mobile Apps: Cross-platform iOS & Android development with React Native",
-    "🛠️ Developer Tools: Open source libraries and productivity tools for developers",
-    "🎯 Code Playground: Real-time JavaScript, Python & Java execution environment",
-    "📚 Programming Academy: Interactive quizzes for 17+ languages with explanations",
-    "⭐ Open Source: Contributing to the developer community with free tools",
-    "🤝 Custom Solutions: Tailored software development for your business needs",
-    "🔧 API Development: RESTful APIs, GraphQL, and microservices architecture",
-    "☁️ Cloud Services: AWS, Azure deployment and DevOps automation"
+    "🌐 Web Development: React, Next.js, PWAs & E-commerce solutions",
+    "📱 Mobile Apps: React Native & Flutter for iOS/Android",
+    "💻 Desktop Apps: Cross-platform Electron applications",
+    "🍽️ RestaurantPOS Pro: Complete restaurant management system",
+    "🛍️ RetailPOS Elite: Smart retail point of sale solution",
+    "📋 WaitlistPro: Smart waitlist management platform",
+    "🛠️ Developer Tools: Powerful SDKs, APIs & libraries for seamless integration",
+    "🎯 Code Playground: Live JavaScript, Python & Java execution",
+    "📚 Programming Academy: Interactive quizzes for 17+ languages",
+    "⚙️ Backend & APIs: RESTful, GraphQL & microservices architecture",
+    "🚀 DevOps: CI/CD pipelines, Docker, Kubernetes & cloud deployment",
+    "🔧 App Management: Performance monitoring, security updates & maintenance"
   ]
 
   return (
@@ -21,13 +23,13 @@ export function ScrollingAnnouncement() {
       <motion.div
         className="flex whitespace-nowrap"
         animate={{
-          x: [0, -2000]
+          x: [0, -2400]
         }}
         transition={{
           x: {
             repeat: Infinity,
             repeatType: "loop",
-            duration: 30,
+            duration: 36,
             ease: "linear"
           }
         }}
