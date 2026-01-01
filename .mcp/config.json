@@ -1,0 +1,24 @@
+{
+  "mcpServers": {
+    "jutech-enterprise-services": {
+      "command": "node",
+      "args": ["mcp-server.js"],
+      "env": {
+        "JUTECH_URL": "https://jutech.dev",
+        "NODE_ENV": "production",
+        "API_VERSION": "2.0"
+      },
+      "description": "Professional development services and AI integration solutions",
+      "capabilities": ["tools", "resources", "prompts"],
+      "metadata": {
+        "company": "JuTech Enterprise Solutions",
+        "services": ["Web Development", "Mobile Apps", "AI Integration", "Consulting"],
+        "expertise_level": "Enterprise",
+        "response_time": "2-24 hours",
+        "pricing_range": "$5k-$100k+"
+      }
+    }
+  },
+  "version": "2.0.0",
+  "schema": "https://schema.modelcontextprotocol.org/config.json"
+}

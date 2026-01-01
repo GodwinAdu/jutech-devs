@@ -1,0 +1,95 @@
+<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="analyticsGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fa709a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#fee140;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#analyticsGrad)"/>
+  
+  <!-- Main Dashboard -->
+  <rect x="20" y="30" width="360" height="240" rx="12" fill="#2c3e50"/>
+  <rect x="30" y="40" width="340" height="25" rx="6" fill="#34495e"/>
+  
+  <!-- Header -->
+  <circle cx="45" cy="52" r="5" fill="#e74c3c"/>
+  <circle cx="58" cy="52" r="5" fill="#f39c12"/>
+  <circle cx="71" cy="52" r="5" fill="#27ae60"/>
+  <text x="90" y="57" font-family="Arial" font-size="11" fill="#ecf0f1">AnalyticsPro Dashboard</text>
+  
+  <!-- KPI Cards -->
+  <rect x="40" y="80" width="80" height="50" rx="6" fill="#34495e"/>
+  <text x="45" y="95" font-family="Arial" font-size="8" fill="#95a5a6">Total Users</text>
+  <text x="45" y="110" font-family="Arial" font-size="16" fill="#3498db">24,567</text>
+  <text x="45" y="122" font-family="Arial" font-size="7" fill="#27ae60">↗ +12.5%</text>
+  
+  <rect x="130" y="80" width="80" height="50" rx="6" fill="#34495e"/>
+  <text x="135" y="95" font-family="Arial" font-size="8" fill="#95a5a6">Revenue</text>
+  <text x="135" y="110" font-family="Arial" font-size="16" fill="#e74c3c">$89,432</text>
+  <text x="135" y="122" font-family="Arial" font-size="7" fill="#27ae60">↗ +8.3%</text>
+  
+  <rect x="220" y="80" width="80" height="50" rx="6" fill="#34495e"/>
+  <text x="225" y="95" font-family="Arial" font-size="8" fill="#95a5a6">Conversion</text>
+  <text x="225" y="110" font-family="Arial" font-size="16" fill="#f39c12">3.42%</text>
+  <text x="225" y="122" font-family="Arial" font-size="7" fill="#e74c3c">↘ -2.1%</text>
+  
+  <rect x="310" y="80" width="60" height="50" rx="6" fill="#34495e"/>
+  <text x="315" y="95" font-family="Arial" font-size="8" fill="#95a5a6">Sessions</text>
+  <text x="315" y="110" font-family="Arial" font-size="16" fill="#9b59b6">156K</text>
+  <text x="315" y="122" font-family="Arial" font-size="7" fill="#27ae60">↗ +15.7%</text>
+  
+  <!-- Line Chart -->
+  <rect x="40" y="145" width="160" height="110" rx="6" fill="#34495e"/>
+  <text x="45" y="160" font-family="Arial" font-size="10" fill="#ecf0f1">User Growth</text>
+  
+  <!-- Chart grid -->
+  <line x1="50" y1="170" x2="190" y2="170" stroke="#95a5a6" stroke-width="0.5" opacity="0.3"/>
+  <line x1="50" y1="190" x2="190" y2="190" stroke="#95a5a6" stroke-width="0.5" opacity="0.3"/>
+  <line x1="50" y1="210" x2="190" y2="210" stroke="#95a5a6" stroke-width="0.5" opacity="0.3"/>
+  <line x1="50" y1="230" x2="190" y2="230" stroke="#95a5a6" stroke-width="0.5" opacity="0.3"/>
+  
+  <!-- Chart line -->
+  <polyline points="50,220 70,210 90,200 110,190 130,180 150,170 170,165 190,160" 
+            stroke="#3498db" stroke-width="3" fill="none"/>
+  
+  <!-- Chart points -->
+  <circle cx="50" cy="220" r="3" fill="#3498db"/>
+  <circle cx="70" cy="210" r="3" fill="#3498db"/>
+  <circle cx="90" cy="200" r="3" fill="#3498db"/>
+  <circle cx="110" cy="190" r="3" fill="#3498db"/>
+  <circle cx="130" cy="180" r="3" fill="#3498db"/>
+  <circle cx="150" cy="170" r="3" fill="#3498db"/>
+  <circle cx="170" cy="165" r="3" fill="#3498db"/>
+  <circle cx="190" cy="160" r="3" fill="#3498db"/>
+  
+  <!-- Bar Chart -->
+  <rect x="210" y="145" width="160" height="110" rx="6" fill="#34495e"/>
+  <text x="215" y="160" font-family="Arial" font-size="10" fill="#ecf0f1">Top Channels</text>
+  
+  <!-- Bars -->
+  <rect x="220" y="200" width="15" height="40" rx="2" fill="#e74c3c"/>
+  <text x="218" y="250" font-family="Arial" font-size="7" fill="#95a5a6">Organic</text>
+  
+  <rect x="240" y="180" width="15" height="60" rx="2" fill="#f39c12"/>
+  <text x="240" y="250" font-family="Arial" font-size="7" fill="#95a5a6">Social</text>
+  
+  <rect x="260" y="190" width="15" height="50" rx="2" fill="#27ae60"/>
+  <text x="260" y="250" font-family="Arial" font-size="7" fill="#95a5a6">Email</text>
+  
+  <rect x="280" y="170" width="15" height="70" rx="2" fill="#9b59b6"/>
+  <text x="280" y="250" font-family="Arial" font-size="7" fill="#95a5a6">Direct</text>
+  
+  <rect x="300" y="210" width="15" height="30" rx="2" fill="#1abc9c"/>
+  <text x="302" y="250" font-family="Arial" font-size="7" fill="#95a5a6">Paid</text>
+  
+  <rect x="320" y="195" width="15" height="45" rx="2" fill="#34495e"/>
+  <text x="320" y="250" font-family="Arial" font-size="7" fill="#95a5a6">Other</text>
+  
+  <!-- Real-time indicator -->
+  <circle cx="350" cy="50" r="8" fill="#27ae60"/>
+  <circle cx="350" cy="50" r="4" fill="#2ecc71" opacity="0.8">
+    <animate attributeName="r" values="4;8;4" dur="2s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.8;0.3;0.8" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  <text x="330" y="55" font-family="Arial" font-size="7" fill="#ecf0f1">LIVE</text>
+</svg>

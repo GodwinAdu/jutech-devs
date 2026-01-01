@@ -1,0 +1,84 @@
+<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="cloudsyncGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#a8edea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#fed6e3;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#cloudsyncGrad)"/>
+  
+  <!-- Cloud -->
+  <ellipse cx="200" cy="100" rx="60" ry="35" fill="#ecf0f1"/>
+  <ellipse cx="170" cy="90" rx="40" ry="25" fill="#ecf0f1"/>
+  <ellipse cx="230" cy="90" rx="45" ry="28" fill="#ecf0f1"/>
+  <ellipse cx="200" cy="75" rx="35" ry="20" fill="#ecf0f1"/>
+  
+  <!-- Cloud icon -->
+  <text x="185" y="105" font-family="Arial" font-size="24" fill="#3498db">☁️</text>
+  
+  <!-- Laptop -->
+  <rect x="50" y="180" width="80" height="50" rx="4" fill="#2c3e50"/>
+  <rect x="55" y="185" width="70" height="40" rx="2" fill="#34495e"/>
+  <rect x="60" y="190" width="60" height="30" rx="2" fill="#ecf0f1"/>
+  
+  <!-- Laptop screen content -->
+  <rect x="65" y="195" width="50" height="3" rx="1" fill="#3498db"/>
+  <rect x="65" y="202" width="35" height="2" rx="1" fill="#95a5a6"/>
+  <rect x="65" y="207" width="40" height="2" rx="1" fill="#95a5a6"/>
+  <rect x="65" y="212" width="30" height="2" rx="1" fill="#95a5a6"/>
+  
+  <!-- Laptop base -->
+  <rect x="45" y="230" width="90" height="8" rx="4" fill="#34495e"/>
+  
+  <!-- Phone -->
+  <rect x="300" y="180" width="40" height="70" rx="8" fill="#2c3e50"/>
+  <rect x="305" y="190" width="30" height="50" rx="4" fill="#ecf0f1"/>
+  
+  <!-- Phone screen content -->
+  <rect x="310" y="195" width="20" height="2" rx="1" fill="#3498db"/>
+  <rect x="310" y="200" width="15" height="1.5" rx="0.5" fill="#95a5a6"/>
+  <rect x="310" y="204" width="18" height="1.5" rx="0.5" fill="#95a5a6"/>
+  <rect x="310" y="208" width="12" height="1.5" rx="0.5" fill="#95a5a6"/>
+  
+  <!-- Tablet -->
+  <rect x="180" y="200" width="60" height="80" rx="6" fill="#2c3e50"/>
+  <rect x="185" y="210" width="50" height="60" rx="4" fill="#ecf0f1"/>
+  
+  <!-- Tablet screen content -->
+  <rect x="190" y="220" width="40" height="4" rx="2" fill="#3498db"/>
+  <rect x="190" y="230" width="30" height="3" rx="1" fill="#95a5a6"/>
+  <rect x="190" y="237" width="35" height="3" rx="1" fill="#95a5a6"/>
+  <rect x="190" y="244" width="25" height="3" rx="1" fill="#95a5a6"/>
+  
+  <!-- Sync arrows -->
+  <!-- Laptop to cloud -->
+  <path d="M 90 170 Q 120 140 170 120" stroke="#27ae60" stroke-width="3" fill="none" opacity="0.8"/>
+  <polygon points="165,115 175,120 165,125" fill="#27ae60" opacity="0.8"/>
+  
+  <!-- Cloud to phone -->
+  <path d="M 230 120 Q 270 140 300 170" stroke="#27ae60" stroke-width="3" fill="none" opacity="0.8"/>
+  <polygon points="295,165 305,170 295,175" fill="#27ae60" opacity="0.8"/>
+  
+  <!-- Cloud to tablet -->
+  <path d="M 200 135 L 200 190" stroke="#27ae60" stroke-width="3" fill="none" opacity="0.8"/>
+  <polygon points="195,185 200,195 205,185" fill="#27ae60" opacity="0.8"/>
+  
+  <!-- Files floating -->
+  <rect x="120" y="50" width="15" height="20" rx="2" fill="#f39c12" opacity="0.7"/>
+  <rect x="125" y="55" width="5" height="10" rx="1" fill="#e67e22" opacity="0.7"/>
+  
+  <rect x="260" y="60" width="12" height="16" rx="2" fill="#e74c3c" opacity="0.7"/>
+  <rect x="264" y="64" width="4" height="8" rx="1" fill="#c0392b" opacity="0.7"/>
+  
+  <rect x="150" y="40" width="18" height="24" rx="2" fill="#9b59b6" opacity="0.7"/>
+  <rect x="154" y="44" width="10" height="16" rx="1" fill="#8e44ad" opacity="0.7"/>
+  
+  <!-- Sync status -->
+  <circle cx="350" cy="50" r="20" fill="#27ae60" opacity="0.9"/>
+  <text x="345" y="55" font-family="Arial" font-size="16" fill="white">✓</text>
+  
+  <!-- Storage indicator -->
+  <rect x="30" y="30" width="100" height="20" rx="10" fill="#34495e"/>
+  <rect x="35" y="35" width="70" height="10" rx="5" fill="#27ae60"/>
+  <text x="40" y="44" font-family="Arial" font-size="8" fill="white">Storage: 2.5GB / 5GB</text>
+</svg>

@@ -1,0 +1,92 @@
+<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="waitlistGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f093fb;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#waitlistGrad)"/>
+  
+  <!-- Landing Page -->
+  <rect x="30" y="40" width="180" height="220" rx="12" fill="#2c3e50"/>
+  <rect x="40" y="50" width="160" height="20" rx="6" fill="#34495e"/>
+  
+  <!-- Browser controls -->
+  <circle cx="50" cy="60" r="3" fill="#e74c3c"/>
+  <circle cx="60" cy="60" r="3" fill="#f39c12"/>
+  <circle cx="70" cy="60" r="3" fill="#27ae60"/>
+  
+  <!-- Hero section -->
+  <rect x="50" y="80" width="140" height="40" rx="6" fill="#3498db"/>
+  <text x="55" y="95" font-family="Arial" font-size="10" fill="white">Coming Soon!</text>
+  <text x="55" y="108" font-family="Arial" font-size="8" fill="white">Revolutionary App Launch</text>
+  
+  <!-- Signup form -->
+  <rect x="50" y="130" width="140" height="80" rx="6" fill="#ecf0f1"/>
+  <text x="55" y="145" font-family="Arial" font-size="9" fill="#2c3e50">Join the Waitlist</text>
+  
+  <!-- Email input -->
+  <rect x="60" y="155" width="120" height="20" rx="4" fill="#bdc3c7"/>
+  <text x="65" y="167" font-family="Arial" font-size="8" fill="#7f8c8d">Enter your email...</text>
+  
+  <!-- Button -->
+  <rect x="60" y="185" width="120" height="20" rx="4" fill="#e74c3c"/>
+  <text x="105" y="197" font-family="Arial" font-size="8" fill="white">Get Early Access</text>
+  
+  <!-- Counter -->
+  <text x="55" y="225" font-family="Arial" font-size="8" fill="#95a5a6">2,847 people joined</text>
+  
+  <!-- Social proof -->
+  <circle cx="60" cy="240" r="8" fill="#3498db"/>
+  <circle cx="75" cy="240" r="8" fill="#e74c3c"/>
+  <circle cx="90" cy="240" r="8" fill="#f39c12"/>
+  <text x="105" y="245" font-family="Arial" font-size="7" fill="#95a5a6">+2,844 more</text>
+  
+  <!-- Email Campaign -->
+  <rect x="230" y="40" width="140" height="100" rx="8" fill="#34495e"/>
+  <text x="235" y="55" font-family="Arial" font-size="10" fill="#ecf0f1">Email Campaign</text>
+  
+  <!-- Email template -->
+  <rect x="240" y="65" width="120" height="65" rx="4" fill="#ecf0f1"/>
+  <rect x="245" y="70" width="110" height="15" rx="2" fill="#3498db"/>
+  <text x="250" y="80" font-family="Arial" font-size="7" fill="white">Welcome to the Waitlist!</text>
+  
+  <rect x="245" y="90" width="80" height="4" rx="1" fill="#95a5a6"/>
+  <rect x="245" y="98" width="90" height="4" rx="1" fill="#95a5a6"/>
+  <rect x="245" y="106" width="70" height="4" rx="1" fill="#95a5a6"/>
+  
+  <rect x="245" y="115" width="60" height="10" rx="2" fill="#27ae60"/>
+  <text x="250" y="122" font-family="Arial" font-size="6" fill="white">Learn More</text>
+  
+  <!-- Analytics Dashboard -->
+  <rect x="230" y="160" width="140" height="100" rx="8" fill="#34495e"/>
+  <text x="235" y="175" font-family="Arial" font-size="10" fill="#ecf0f1">Analytics</text>
+  
+  <!-- Metrics -->
+  <rect x="240" y="185" width="40" height="30" rx="4" fill="#e74c3c"/>
+  <text x="245" y="195" font-family="Arial" font-size="7" fill="white">Signups</text>
+  <text x="245" y="208" font-family="Arial" font-size="10" fill="white">2,847</text>
+  
+  <rect x="290" y="185" width="40" height="30" rx="4" fill="#27ae60"/>
+  <text x="295" y="195" font-family="Arial" font-size="7" fill="white">Rate</text>
+  <text x="295" y="208" font-family="Arial" font-size="10" fill="white">12.5%</text>
+  
+  <!-- Growth chart -->
+  <rect x="240" y="225" width="120" height="25" rx="4" fill="#2c3e50"/>
+  <polyline points="245,240 255,235 265,230 275,225 285,220 295,215 305,210 315,205 325,200 335,195 345,190" 
+            stroke="#3498db" stroke-width="2" fill="none"/>
+  
+  <!-- Notification icons -->
+  <circle cx="60" cy="30" r="12" fill="#e74c3c"/>
+  <text x="56" y="35" font-family="Arial" font-size="10" fill="white">📧</text>
+  
+  <circle cx="120" cy="25" r="10" fill="#f39c12"/>
+  <text x="117" y="29" font-family="Arial" font-size="8" fill="white">🔔</text>
+  
+  <circle cx="340" cy="30" r="12" fill="#27ae60"/>
+  <text x="336" y="35" font-family="Arial" font-size="10" fill="white">📊</text>
+  
+  <!-- Connection lines -->
+  <line x1="120" y1="130" x2="230" y2="90" stroke="#95a5a6" stroke-width="2" opacity="0.5"/>
+  <line x1="120" y1="180" x2="230" y2="200" stroke="#95a5a6" stroke-width="2" opacity="0.5"/>
+</svg>
