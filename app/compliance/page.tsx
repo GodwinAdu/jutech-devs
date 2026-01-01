@@ -1,5 +1,6 @@
 "use client"
 
+import { Navigation } from "@/components/navigation"
 import { motion } from "framer-motion"
 
 export default function CompliancePage() {
@@ -58,8 +59,9 @@ export default function CompliancePage() {
 
   return (
     <main className="min-h-screen bg-background">
+      <Navigation />
       {/* Hero Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 border-b border-border">
+      <section className="py-28 px-4 sm:px-6 lg:px-8 border-b border-border">
         <div className="max-w-4xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
             <h1 className="text-4xl md:text-5xl font-bold mb-4 gradient-text">Compliance & Security</h1>

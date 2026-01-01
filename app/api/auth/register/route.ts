@@ -1,19 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server'
-import connectDB from '@/lib/mongodb'
+import { connectDB } from '@/lib/mongodb'
 import { User } from '@/lib/models/community'
 import { signToken, AuthError } from '@/lib/auth-utils'
+import { emailService } from '@/lib/email'
 
 export async function POST(request: NextRequest) {
   try {
     await connectDB()
-    
+
     const body = await request.json()
-    const { name, username, email } = body
+    const { name, username, email, password } = body
 
     // Validate input
-    if (!name?.trim() || !username?.trim() || !email?.trim()) {
+    if (!name?.trim() || !username?.trim() || !email?.trim() || !password?.trim()) {
       return NextResponse.json(
-        { error: 'Name, username, and email are required' }, 
+        { error: 'Name, username, email, and password are required' },
+        { status: 400 }
+      )
+    }
+
+    // Validate password strength
+    if (password.length < 6) {
+      return NextResponse.json(
+        { error: 'Password must be at least 6 characters long' },
         { status: 400 }
       )
     }
@@ -22,7 +31,7 @@ export async function POST(request: NextRequest) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email)) {
       return NextResponse.json(
-        { error: 'Invalid email format' }, 
+        { error: 'Invalid email format' },
         { status: 400 }
       )
     }
@@ -31,7 +40,7 @@ export async function POST(request: NextRequest) {
     const usernameRegex = /^[a-z0-9]{3,20}$/
     if (!usernameRegex.test(username)) {
       return NextResponse.json(
-        { error: 'Username must be 3-20 characters, lowercase letters and numbers only' }, 
+        { error: 'Username must be 3-20 characters, lowercase letters and numbers only' },
         { status: 400 }
       )
     }
@@ -47,7 +56,7 @@ export async function POST(request: NextRequest) {
     if (existingUser) {
       const field = existingUser.email === email.toLowerCase().trim() ? 'email' : 'username'
       return NextResponse.json(
-        { error: `This ${field} is already registered` }, 
+        { error: `This ${field} is already registered` },
         { status: 409 }
       )
     }
@@ -57,6 +66,7 @@ export async function POST(request: NextRequest) {
       name: name.trim(),
       username: username.toLowerCase().trim(),
       email: email.toLowerCase().trim(),
+      password: password, // In production, hash with bcrypt
       avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${username}`,
       badges: [{
         id: 'newcomer',
@@ -69,6 +79,14 @@ export async function POST(request: NextRequest) {
     })
 
     await user.save()
+
+    // Send welcome email
+    try {
+      await emailService.sendWelcomeEmail(user.email, user.name)
+    } catch (emailError) {
+      console.error('Failed to send welcome email:', emailError)
+      // Don't fail registration if email fails
+    }
 
     // Generate token
     const token = signToken({
@@ -105,16 +123,16 @@ export async function POST(request: NextRequest) {
     return response
   } catch (error) {
     console.error('Registration error:', error)
-    
+
     if (error instanceof AuthError) {
       return NextResponse.json(
-        { error: error.message }, 
+        { error: error.message },
         { status: error.statusCode }
       )
     }
-    
+
     return NextResponse.json(
-      { error: 'Internal server error' }, 
+      { error: 'Internal server error' },
       { status: 500 }
     )
   }

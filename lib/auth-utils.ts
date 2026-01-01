@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken'
 import { NextRequest } from 'next/server'
 
-const JWT_SECRET = process.env.JWT_SECRET
+const JWT_SECRET = process.env.JWT_SECRET!
 
 if (!JWT_SECRET) {
   throw new Error('JWT_SECRET environment variable is required')
@@ -42,7 +42,7 @@ export function verifyToken(token: string): AuthUser | null {
     const decoded = jwt.verify(token, JWT_SECRET, {
       issuer: 'jutech-community',
       audience: 'jutech-users'
-    }) as AuthUser
+    }) as jwt.JwtPayload & AuthUser
     
     // Ensure required fields exist
     if (!decoded.id || !decoded.username || !decoded.email) {

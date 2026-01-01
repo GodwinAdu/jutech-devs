@@ -1,40 +1,36 @@
-import mongoose from 'mongoose'
+import mongoose from "mongoose";
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/jutech-community'
+// Environment variable for MongoDB connection string.
+const MONGODB_URL = process.env.MONGODB_URI!;
 
-if (!MONGODB_URI) {
-  throw new Error('Please define the MONGODB_URI environment variable')
+// Cached connection to avoid multiple connections during hot-reloads in development.
+const cached = (global as any).mongoose || { conn: null, Promise: null };
+
+/**
+ * Connects to the MongoDB database using Mongoose.
+ * This function checks if a connection already exists in the cache and reuses it to avoid multiple connections.
+ * If no connection exists, it creates a new connection using the MONGODB_URL environment variable.
+ * 
+ * @returns A promise that resolves to the MongoDB connection.
+ * @throws {Error} If the MONGODB_URL is not provided.
+ */
+export const connectDB = async () => {
+  // Return the cached connection if it exists.
+  if (cached.conn) return cached.conn;
+
+  // Throw an error if the MongoDB URL is missing.
+  if (!MONGODB_URL) throw new Error("MONGODB_URL IS MISSING");
+
+  // Initialize a new connection if not already cached.
+  cached.Promise = cached.Promise || mongoose.connect(MONGODB_URL, {
+    dbName: "Jutech-Devs", // Specify the database name.
+    bufferCommands: false, // Disable Mongoose buffering commands.
+    serverSelectionTimeoutMS: 100000, // 30 seconds timeout for server selection.
+  });
+
+  // Await the connection promise and cache it.
+  cached.conn = await cached.Promise;
+
+  // Return the connection.
+  return cached.conn;
 }
-
-let cached = global.mongoose
-
-if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null }
-}
-
-async function connectDB() {
-  if (cached.conn) {
-    return cached.conn
-  }
-
-  if (!cached.promise) {
-    const opts = {
-      bufferCommands: false,
-    }
-
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
-      return mongoose
-    })
-  }
-
-  try {
-    cached.conn = await cached.promise
-  } catch (e) {
-    cached.promise = null
-    throw e
-  }
-
-  return cached.conn
-}
-
-export default connectDB

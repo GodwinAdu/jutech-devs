@@ -5,8 +5,10 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { MessageSquare, ThumbsUp, Eye, Calendar, Users, Trophy, Star } from "lucide-react"
+import { MessageSquare, ThumbsUp, ThumbsDown, Eye, Calendar, Users, Trophy, Star } from "lucide-react"
 import Link from "next/link"
+import { useState } from "react"
+import { useAuth } from "@/lib/auth-context"
 
 interface PostCardProps {
   post: {
@@ -25,6 +27,33 @@ interface PostCardProps {
 }
 
 export function PostCard({ post }: PostCardProps) {
+  const { user } = useAuth()
+  const [votes, setVotes] = useState(post.votes)
+  const [userVote, setUserVote] = useState<'up' | 'down' | null>(null)
+  const [voting, setVoting] = useState(false)
+
+  const handleVote = async (type: 'up' | 'down') => {
+    if (!user || voting) return
+    
+    setVoting(true)
+    try {
+      const response = await fetch(`/api/community/posts/${post.id}/vote`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type })
+      })
+      
+      if (response.ok) {
+        const data = await response.json()
+        setVotes(data.votes)
+        setUserVote(data.userVote)
+      }
+    } catch (error) {
+      console.error('Vote failed:', error)
+    } finally {
+      setVoting(false)
+    }
+  }
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -35,10 +64,25 @@ export function PostCard({ post }: PostCardProps) {
       <Card className="p-6 hover:border-accent/50 transition-all cursor-pointer">
         <div className="flex gap-4">
           <div className="flex flex-col items-center gap-2 min-w-[60px]">
-            <Button size="sm" variant="ghost" className="h-8 w-8 p-0 hover:bg-green-500/20">
+            <Button 
+              size="sm" 
+              variant="ghost" 
+              className={`h-8 w-8 p-0 ${userVote === 'up' ? 'bg-green-500/20 text-green-500' : 'hover:bg-green-500/20'}`}
+              onClick={() => handleVote('up')}
+              disabled={!user || voting}
+            >
               <ThumbsUp className="w-4 h-4" />
             </Button>
-            <span className="text-lg font-bold text-accent">{post.votes}</span>
+            <span className="text-lg font-bold text-accent">{votes}</span>
+            <Button 
+              size="sm" 
+              variant="ghost" 
+              className={`h-8 w-8 p-0 ${userVote === 'down' ? 'bg-red-500/20 text-red-500' : 'hover:bg-red-500/20'}`}
+              onClick={() => handleVote('down')}
+              disabled={!user || voting}
+            >
+              <ThumbsDown className="w-4 h-4" />
+            </Button>
           </div>
 
           <div className="flex-1">

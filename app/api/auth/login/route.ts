@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import connectDB from '@/lib/mongodb'
+import {connectDB} from '@/lib/mongodb'
 import { User } from '@/lib/models/community'
 import { signToken, AuthError } from '@/lib/auth-utils'
 
@@ -30,8 +30,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Simple demo auth - in production use bcrypt
-    const isValid = password === 'demo123'
+    // Simple demo auth - compare plain text passwords
+    // In production, use bcrypt.compare(password, user.password)
+    const isValid = password === user.password
     
     if (!isValid) {
       return NextResponse.json(

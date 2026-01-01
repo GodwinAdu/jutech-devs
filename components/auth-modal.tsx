@@ -20,7 +20,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
   const [error, setError] = useState('')
 
   const [loginForm, setLoginForm] = useState({ email: '', password: '' })
-  const [registerForm, setRegisterForm] = useState({ name: '', username: '', email: '' })
+  const [registerForm, setRegisterForm] = useState({ name: '', username: '', email: '', password: '' })
 
   if (!isOpen) return null
 
@@ -29,11 +29,11 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
     setLoading(true)
     setError('')
 
-    const success = await login(loginForm.email, loginForm.password)
-    if (success) {
+    const result = await login(loginForm.email, loginForm.password)
+    if (result.success) {
       onClose()
     } else {
-      setError('Invalid credentials')
+      setError(result.error || 'Invalid credentials')
     }
     setLoading(false)
   }
@@ -43,11 +43,11 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
     setLoading(true)
     setError('')
 
-    const success = await register(registerForm.name, registerForm.username, registerForm.email)
-    if (success) {
+    const result = await register(registerForm.name, registerForm.username, registerForm.email, registerForm.password)
+    if (result.success) {
       onClose()
     } else {
-      setError('Registration failed')
+      setError(result.error || 'Registration failed')
     }
     setLoading(false)
   }
@@ -124,6 +124,13 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                 placeholder="Email"
                 value={registerForm.email}
                 onChange={(e) => setRegisterForm({ ...registerForm, email: e.target.value })}
+                required
+              />
+              <Input
+                type="password"
+                placeholder="Password (min 6 characters)"
+                value={registerForm.password}
+                onChange={(e) => setRegisterForm({ ...registerForm, password: e.target.value })}
                 required
               />
               {error && <p className="text-red-500 text-sm">{error}</p>}

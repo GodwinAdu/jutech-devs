@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAuthUser } from '@/lib/auth-utils'
-import connectDB from '@/lib/mongodb'
+import { connectDB } from '@/lib/mongodb'
 import { User } from '@/lib/models/community'
 
 export async function GET(request: NextRequest) {

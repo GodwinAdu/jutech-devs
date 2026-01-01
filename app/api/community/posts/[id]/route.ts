@@ -1,15 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server'
-import connectDB from '@/lib/mongodb'
+import { connectDB } from '@/lib/mongodb'
 import { Post } from '@/lib/models/community'
+import mongoose from 'mongoose'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params:Promise< { id: string }> }
 ) {
+  const { id: postId } = await params
   try {
     await connectDB()
     
-    const post = await Post.findById(params.id)
+    // Validate ObjectId format
+    if (!mongoose.Types.ObjectId.isValid(postId)) {
+      return NextResponse.json({ error: 'Invalid post ID format' }, { status: 400 })
+    }
+
+    const post = await Post.findById(postId)
       .populate('author', 'name username avatar reputation badges')
       .lean()
 
@@ -18,11 +25,11 @@ export async function GET(
     }
 
     // Increment view count
-    await Post.findByIdAndUpdate(params.id, { $inc: { views: 1 } })
+    await Post.findByIdAndUpdate(postId, { $inc: { views: 1 } })
 
     return NextResponse.json({ post })
   } catch (error) {
     console.error('Failed to fetch post:', error)
-    return NextResponse.json({ error: 'Failed to fetch post' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to fetch post', details: (error as Error).message }, { status: 500 })
   }
 }

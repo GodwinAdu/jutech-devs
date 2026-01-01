@@ -1,82 +1,141 @@
+"use client"
+
+import { useEffect, useState } from 'react'
 import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
 import { EventCard } from "@/components/community/community-cards"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Calendar, Clock, Users, MapPin } from "lucide-react"
+import { Calendar, Clock, Users, MapPin, Loader2 } from "lucide-react"
+import Link from 'next/link'
+import { useAuth } from '@/lib/auth-context'
 
-const events = [
-  {
-    id: '1',
-    title: 'React Performance Workshop',
-    description: 'Learn advanced React optimization techniques and best practices for building high-performance applications.',
-    type: 'workshop',
-    date: '2024-02-15T18:00:00Z',
-    duration: 120,
-    attendees: 156,
-    maxAttendees: 200,
-    host: { name: 'Sarah Chen', avatar: '/api/placeholder/40/40' },
-    tags: ['React', 'Performance', 'Workshop'],
-    status: 'upcoming' as const
-  },
-  {
-    id: '2',
-    title: 'AI in Development Webinar',
-    description: 'Explore how AI is transforming software development and learn about the latest tools and techniques.',
-    type: 'webinar',
-    date: '2024-02-20T19:00:00Z',
-    duration: 90,
-    attendees: 342,
-    maxAttendees: 500,
-    host: { name: 'Mike Johnson', avatar: '/api/placeholder/40/40' },
-    tags: ['AI', 'Development', 'Webinar'],
-    status: 'live' as const
-  },
-  {
-    id: '3',
-    title: 'Hackathon 2024: Build the Future',
-    description: '48-hour hackathon focused on creating innovative solutions for modern development challenges.',
-    type: 'hackathon',
-    date: '2024-03-01T09:00:00Z',
-    duration: 2880,
-    attendees: 89,
-    maxAttendees: 100,
-    host: { name: 'Alex Rivera', avatar: '/api/placeholder/40/40' },
-    tags: ['Hackathon', 'Innovation', 'Competition'],
-    status: 'upcoming' as const
+interface Event {
+  _id: string
+  title: string
+  description: string
+  type: string
+  date: string
+  duration: number
+  attendees: any[]
+  maxAttendees: number
+  host: {
+    name: string
+    avatar: string
   }
-]
+  tags: string[]
+  status: 'upcoming' | 'live' | 'completed'
+}
 
 export default function EventsPage() {
+  const { user } = useAuth()
+  const [events, setEvents] = useState<Event[]>([])
+  const [loading, setLoading] = useState(true)
+  const [filter, setFilter] = useState('all')
+
+  const fetchEvents = async () => {
+    try {
+      setLoading(true)
+      const params = new URLSearchParams({
+        limit: '20',
+        ...(filter !== 'all' && { type: filter })
+      })
+      
+      const response = await fetch(`/api/community/events?${params}`)
+      const data = await response.json()
+      
+      if (response.ok) {
+        setEvents(data.events)
+      }
+    } catch (error) {
+      console.error('Failed to fetch events:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchEvents()
+  }, [filter])
+
   return (
     <main className="min-h-screen bg-background">
       <Navigation />
       
-      <section className="py-20 bg-gradient-to-b from-background to-background/50">
+      <section className="pt-28 bg-gradient-to-b from-background to-background/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <Badge className="mb-4 bg-gradient-to-r from-blue-500 to-purple-500">Community Events</Badge>
             <h1 className="text-5xl md:text-6xl font-bold mb-6">
               Developer <span className="text-gradient">Events</span>
             </h1>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
               Join workshops, webinars, hackathons, and meetups. Learn from experts, network with peers, and grow your skills.
             </p>
+            {user?.role === 'admin' && (
+              <Button className="bg-gradient-to-r from-green-500 to-blue-500" asChild>
+                <Link href="/community/events/create">Create Event</Link>
+              </Button>
+            )}
           </div>
 
           <div className="flex flex-wrap gap-4 justify-center mb-12">
-            <Button className="bg-gradient-to-r from-blue-500 to-purple-500">All Events</Button>
-            <Button variant="outline">Workshops</Button>
-            <Button variant="outline">Webinars</Button>
-            <Button variant="outline">Hackathons</Button>
-            <Button variant="outline">Meetups</Button>
+            <Button 
+              className={filter === 'all' ? 'bg-gradient-to-r from-blue-500 to-purple-500' : ''}
+              variant={filter === 'all' ? 'default' : 'outline'}
+              onClick={() => setFilter('all')}
+            >
+              All Events
+            </Button>
+            <Button 
+              variant={filter === 'workshop' ? 'default' : 'outline'}
+              onClick={() => setFilter('workshop')}
+            >
+              Workshops
+            </Button>
+            <Button 
+              variant={filter === 'webinar' ? 'default' : 'outline'}
+              onClick={() => setFilter('webinar')}
+            >
+              Webinars
+            </Button>
+            <Button 
+              variant={filter === 'hackathon' ? 'default' : 'outline'}
+              onClick={() => setFilter('hackathon')}
+            >
+              Hackathons
+            </Button>
+            <Button 
+              variant={filter === 'meetup' ? 'default' : 'outline'}
+              onClick={() => setFilter('meetup')}
+            >
+              Meetups
+            </Button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {events.map((event) => (
-              <EventCard key={event.id} event={event} />
-            ))}
-          </div>
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="w-8 h-8 animate-spin" />
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {events.map((event) => (
+                <EventCard key={event._id} event={{
+                  id: event._id,
+                  title: event.title,
+                  description: event.description,
+                  type: event.type,
+                  date: event.date,
+                  duration: event.duration,
+                  attendees: event.attendees.length,
+                  maxAttendees: event.maxAttendees,
+                  host: event.host,
+                  tags: event.tags,
+                  status: event.status
+                }} />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

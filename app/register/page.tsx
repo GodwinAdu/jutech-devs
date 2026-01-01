@@ -10,18 +10,20 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
-import { ArrowLeft, User, Mail, UserCheck, Sparkles, Users, Trophy, Zap } from 'lucide-react'
+import { ArrowLeft, User, Mail, UserCheck, Sparkles, Users, Trophy, Zap, Lock } from 'lucide-react'
 
 export default function RegisterPage() {
   const { register, user } = useAuth()
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
   const [agreed, setAgreed] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
     username: '',
-    email: ''
+    email: '',
+    password: ''
   })
 
   useEffect(() => {
@@ -39,10 +41,14 @@ export default function RegisterPage() {
 
     setLoading(true)
     setError('')
+    setSuccess('')
 
-    const result = await register(formData.name, formData.username, formData.email)
+    const result = await register(formData.name, formData.username, formData.email, formData.password)
     if (result.success) {
-      router.push('/community')
+      setSuccess('Account created successfully! Welcome email sent to your inbox.')
+      setTimeout(() => {
+        router.push('/community')
+      }, 2000)
     } else {
       setError(result.error || 'Registration failed')
     }
@@ -204,6 +210,23 @@ export default function RegisterPage() {
                 </div>
               </div>
 
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="Create a secure password"
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    className="pl-10"
+                    required
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground">Must be at least 6 characters long</p>
+              </div>
+
               <div className="flex items-center space-x-2">
                 <Checkbox 
                   id="terms" 
@@ -221,6 +244,16 @@ export default function RegisterPage() {
                   </Link>
                 </Label>
               </div>
+
+              {success && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="p-3 rounded-lg bg-green-500/10 border border-green-500/20 text-green-600 text-sm"
+                >
+                  {success}
+                </motion.div>
+              )}
 
               {error && (
                 <motion.div

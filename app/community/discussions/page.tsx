@@ -79,7 +79,7 @@ export default function DiscussionsPage() {
     <main className="min-h-screen bg-background">
       <Navigation />
       
-      <section className="py-20 bg-gradient-to-b from-background to-background/50">
+      <section className="py-28 bg-gradient-to-b from-background to-background/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <Badge className="mb-4 bg-gradient-to-r from-blue-500 to-purple-500">Discussions</Badge>

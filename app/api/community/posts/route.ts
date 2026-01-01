@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import connectDB from '@/lib/mongodb'
+import {connectDB} from '@/lib/mongodb'
 import { Post, User } from '@/lib/models/community'
 import { getAuthUser } from '@/lib/auth-utils'
 
@@ -14,9 +14,12 @@ export async function GET(request: NextRequest) {
     const sort = searchParams.get('sort') || 'createdAt'
     const search = searchParams.get('search')
     const tags = searchParams.get('tags')?.split(',')
+    const solved = searchParams.get('solved')
 
     const query: any = {}
     if (category) query.category = category
+    if (solved === 'true') query.solved = true
+    if (solved === 'false') query.solved = false
     if (search) {
       query.$or = [
         { title: { $regex: search, $options: 'i' } },

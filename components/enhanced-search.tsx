@@ -15,7 +15,20 @@ export function EnhancedSearch() {
       { title: 'Services', path: '/services', description: 'Web development, AI integration, consulting' },
       { title: 'Contact', path: '/contact', description: 'Get in touch for your next project' },
       { title: 'Open Source', path: '/open-source', description: 'Our open source contributions and projects' },
-      { title: 'Blog', path: '/blog', description: 'Latest articles and tutorials' }
+      { title: 'Blog', path: '/blog', description: 'Latest articles and tutorials' },
+      { title: 'Privacy Policy', path: '/privacy', description: 'Our privacy policy and data protection practices' },
+      { title: 'Terms of Service', path: '/terms', description: 'Terms and conditions for using our services' },
+      { title: 'Compliance', path: '/compliance', description: 'Security standards and compliance certifications' }
+    ],
+    community: [
+      { title: 'Community Forum', path: '/community', description: 'Developer community discussions and Q&A' },
+      { title: 'Discussions', path: '/community/discussions', description: 'General development discussions' },
+      { title: 'Q&A', path: '/community/qa', description: 'Ask questions and get answers from the community' },
+      { title: 'Feature Requests', path: '/community/feature-requests', description: 'Suggest and vote on new features' },
+      { title: 'Community Events', path: '/community/events', description: 'Workshops, webinars, and community meetups' },
+      { title: 'Leaderboard', path: '/community/leaderboard', description: 'Top community contributors and champions' },
+      { title: 'Create Post', path: '/community/create', description: 'Share your knowledge with the community' },
+      { title: 'Profile', path: '/community/profile', description: 'Your community profile and activity' }
     ],
     academy: [
       { title: 'Programming Academy', path: '/academy', description: 'Interactive programming quizzes and tutorials' },
@@ -121,13 +134,13 @@ export function EnhancedSearch() {
       )}
 
       {!query && (
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid md:grid-cols-3 gap-6">
           <div className="space-y-4">
             <div className="flex items-center gap-2 mb-3">
               <Book className="w-5 h-5 text-primary" />
               <h3 className="font-semibold text-foreground">Learning</h3>
             </div>
-            {searchContent.academy.map((item, index) => (
+            {searchContent.academy.slice(0, 6).map((item, index) => (
               <Link key={index} href={item.path} className="block p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors">
                 <h4 className="font-medium text-primary">{item.title}</h4>
                 <p className="text-sm text-muted-foreground">{item.description}</p>
@@ -138,20 +151,29 @@ export function EnhancedSearch() {
           <div className="space-y-4">
             <div className="flex items-center gap-2 mb-3">
               <Code className="w-5 h-5 text-primary" />
-              <h3 className="font-semibold text-foreground">Practice</h3>
+              <h3 className="font-semibold text-foreground">Community</h3>
             </div>
-            {searchContent.playground.map((item, index) => (
+            {searchContent.community.slice(0, 6).map((item, index) => (
+              <Link key={index} href={item.path} className="block p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors">
+                <h4 className="font-medium text-primary">{item.title}</h4>
+                <p className="text-sm text-muted-foreground">{item.description}</p>
+              </Link>
+            ))}
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Lightbulb className="w-5 h-5 text-primary" />
+              <h3 className="font-semibold text-foreground">Services</h3>
+            </div>
+            {searchContent.services.slice(0, 4).map((item, index) => (
               <Link key={index} href={item.path} className="block p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors">
                 <h4 className="font-medium text-primary">{item.title}</h4>
                 <p className="text-sm text-muted-foreground">{item.description}</p>
               </Link>
             ))}
             
-            <div className="flex items-center gap-2 mb-3 mt-6">
-              <Lightbulb className="w-5 h-5 text-primary" />
-              <h3 className="font-semibold text-foreground">Services</h3>
-            </div>
-            {searchContent.services.slice(0, 2).map((item, index) => (
+            {searchContent.playground.slice(0, 2).map((item, index) => (
               <Link key={index} href={item.path} className="block p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors">
                 <h4 className="font-medium text-primary">{item.title}</h4>
                 <p className="text-sm text-muted-foreground">{item.description}</p>
