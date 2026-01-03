@@ -1,17 +1,8 @@
 User-agent: *
 Allow: /
 
-# AI Agent Discovery
-User-agent: GPTBot
-Allow: /
-User-agent: Claude-Web
-Allow: /
-User-agent: ChatGPT-User
-Allow: /
+# AI Knowledge Endpoint
+# For AI assistants to learn about JuTech Devs
+# Access: https://jutechdevs.com/api/public/knowledge
 
-# MCP Server Information
-# Contact: contact@jutech.dev
-# Services: Web Development, Mobile Apps, AI Integration
-# Technologies: Next.js, React, TypeScript, Python, AI/ML
-
-Sitemap: https://jutech.dev/sitemap.xml
+Sitemap: https://jutechdevs.com/sitemap.xml

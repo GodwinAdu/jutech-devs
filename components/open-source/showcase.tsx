@@ -30,8 +30,8 @@ const projects: Project[] = [
     stars: 127,
     forks: 34,
     downloads: 2847,
-    githubUrl: "https://github.com/jutech/nextjs-auth-template",
-    demoUrl: "https://nextjs-auth-template.jutech.dev",
+    githubUrl: "https://github.com/jutech-devs/nextjs-auth-template.git",
+    demoUrl: "https://auth-template.vercel.app",
     category: "Template",
     tags: ["Next.js", "Authentication", "2FA", "Security", "Template", "MongoDB", "TypeScript"],
     status: "Active"

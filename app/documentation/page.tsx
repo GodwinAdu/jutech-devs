@@ -4,7 +4,7 @@ import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
 import { motion } from "framer-motion"
 import Link from "next/link"
-import { Code2, MessageSquare, Zap, BarChart3, Shield, Book } from "lucide-react"
+import { Code2, MessageSquare, Zap, BarChart3, Shield, Book, Lightbulb } from "lucide-react"
 
 export default function Documentation() {
   const sdks = [
@@ -42,6 +42,13 @@ export default function Documentation() {
       icon: Zap,
       link: "/documentation/rate-limiter",
       category: "Performance"
+    },
+    {
+      name: "Quantum Query",
+      description: "Advanced React Query enhancement",
+      icon: Lightbulb,
+      link: "/documentation/quantum-query",
+      category: "React Query"
     }
   ]
 

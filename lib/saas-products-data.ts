@@ -4,7 +4,7 @@ export const saasProducts = {
     name: "RestaurantPOS Pro",
     icon: "🍽️",
     image: "/images/saas/restaurant-pos.svg",
-    website: "https://restaurantpos-pro.com",
+    website: "https://restaurant2026.vercel.app",
     isWaitlist: false,
     tagline: "Complete Restaurant Management System",
     description:
@@ -28,18 +28,13 @@ export const saasProducts = {
     ],
     pricing: [
       {
-        name: "Starter",
-        price: "$79",
-        features: ["1 location", "Basic POS features", "Email support", "Up to 5 staff accounts"],
-      },
-      {
         name: "Professional",
-        price: "$149",
+        price: "GH₵120",
         features: ["Up to 3 locations", "Advanced analytics", "Kitchen display", "Priority support", "Unlimited staff"],
         highlight: true,
       },
       {
-        name: "Enterprise",
+        name: "Custom",
         price: "Custom",
         features: ["Unlimited locations", "Custom integrations", "Dedicated support", "Advanced reporting"],
       },
@@ -51,7 +46,7 @@ export const saasProducts = {
     name: "RetailPOS Elite",
     icon: "🛍️",
     image: "/images/saas/retail-pos.svg",
-    website: "https://retailpos-elite.com",
+    website: "https://retail2026.vercel.app",
     isWaitlist: false,
     tagline: "Smart Retail Point of Sale System",
     description:
@@ -74,19 +69,15 @@ export const saasProducts = {
       { title: "E-commerce Integration", desc: "Sync with online stores and manage omnichannel inventory" },
     ],
     pricing: [
-      {
-        name: "Basic",
-        price: "$59",
-        features: ["1 store location", "Basic POS features", "Email support", "Up to 3 registers"],
-      },
+     
       {
         name: "Professional",
-        price: "$119",
+        price: "GH₵80",
         features: ["Up to 5 locations", "Advanced inventory", "Customer analytics", "Priority support", "Unlimited registers"],
         highlight: true,
       },
       {
-        name: "Enterprise",
+        name: "Custom",
         price: "Custom",
         features: ["Unlimited locations", "Custom integrations", "24/7 support", "Advanced reporting", "API access"],
       },
@@ -99,7 +90,7 @@ export const saasProducts = {
     name: "WaitlistPro",
     icon: "📋",
     image: "/images/saas/waitlistpro.svg",
-    website: "https://waitlistpro.com",
+    website: "https://waitlist2026.vercel.app",
     isWaitlist: false,
     tagline: "Smart Waitlist Management Platform",
     description:
