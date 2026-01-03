@@ -1,52 +1,49 @@
 import { NextRequest, NextResponse } from 'next/server'
-import {connectDB} from '@/lib/mongodb'
+import { connectDB } from '@/lib/mongodb'
 import { User } from '@/lib/models/community'
-import { signToken, AuthError } from '@/lib/auth-utils'
+import { logSecurityEvent, getClientInfo } from '@/lib/security-utils'
+import { AuthError, signToken } from '@/lib/auth-utils'
 
 export async function POST(request: NextRequest) {
   try {
     await connectDB()
     
-    const body = await request.json()
-    const { email, password } = body
-
-    // Validate input
-    if (!email || !password) {
-      return NextResponse.json(
-        { error: 'Email and password are required' }, 
-        { status: 400 }
-      )
-    }
-
-    // Find user
-    const user = await User.findOne({ 
-      email: email.toLowerCase().trim() 
-    }).select('+password').lean()
+    const { email, password } = await request.json()
+    const clientInfo = getClientInfo(request)
     
-    if (!user) {
-      return NextResponse.json(
-        { error: 'Invalid credentials' }, 
-        { status: 401 }
-      )
-    }
-
-    // Simple demo auth - compare plain text passwords
-    // In production, use bcrypt.compare(password, user.password)
-    const isValid = password === user.password
+    const user = await User.findOne({ email }).select('+password')
     
-    if (!isValid) {
-      return NextResponse.json(
-        { error: 'Invalid credentials' }, 
-        { status: 401 }
-      )
+    if (!user || user.password !== password) {
+      // Log failed login attempt
+      await logSecurityEvent({
+        userId: user?._id?.toString(),
+        action: 'failed_login',
+        details: {
+          ...clientInfo,
+          reason: 'Invalid credentials',
+          metadata: { email }
+        },
+        severity: 'medium'
+      })
+      
+      return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 })
     }
-
-    // Update last login
-    await User.findByIdAndUpdate(user._id, { 
-      lastActive: new Date() 
+    
+    // Update last active
+    await User.findByIdAndUpdate(user._id, { lastActive: new Date() })
+    
+    // Log successful login
+    await logSecurityEvent({
+      userId: user._id.toString(),
+      action: 'login',
+      details: {
+        ...clientInfo,
+        metadata: { username: user.username }
+      },
+      severity: 'low'
     })
 
-    // Generate token
+     // Generate token
     const token = signToken({
       id: user._id.toString(),
       username: user.username,
@@ -56,7 +53,7 @@ export async function POST(request: NextRequest) {
       role: user.role || 'user'
     })
 
-    // Create response
+     // Create response
     const response = NextResponse.json({
       user: {
         id: user._id,
@@ -81,8 +78,7 @@ export async function POST(request: NextRequest) {
     return response
   } catch (error) {
     console.error('Login error:', error)
-    
-    if (error instanceof AuthError) {
+if (error instanceof AuthError) {
       return NextResponse.json(
         { error: error.message }, 
         { status: error.statusCode }

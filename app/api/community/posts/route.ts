@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import {connectDB} from '@/lib/mongodb'
 import { Post, User } from '@/lib/models/community'
 import { getAuthUser } from '@/lib/auth-utils'
+import { logSecurityEvent, getClientInfo, checkSuspiciousActivity } from '@/lib/security-utils'
 
 export async function GET(request: NextRequest) {
   try {
@@ -9,6 +10,7 @@ export async function GET(request: NextRequest) {
     
     const { searchParams } = new URL(request.url)
     const category = searchParams.get('category')
+    const status = searchParams.get('status')
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '10')
     const sort = searchParams.get('sort') || 'createdAt'
@@ -18,6 +20,9 @@ export async function GET(request: NextRequest) {
 
     const query: any = {}
     if (category) query.category = category
+    if (status === 'pinned') query.pinned = true
+    if (status === 'locked') query.locked = true
+    if (status === 'solved') query.solved = true
     if (solved === 'true') query.solved = true
     if (solved === 'false') query.solved = false
     if (search) {
@@ -50,10 +55,17 @@ export async function GET(request: NextRequest) {
       .skip((page - 1) * limit)
       .lean()
 
+    // Add calculated vote counts
+    const postsWithCounts = posts.map(post => ({
+      ...post,
+      upvoteCount: Array.isArray(post.upvotes) ? post.upvotes.length : 0,
+      downvoteCount: Array.isArray(post.downvotes) ? post.downvotes.length : 0
+    }))
+
     const total = await Post.countDocuments(query)
 
     return NextResponse.json({
-      posts,
+      posts: postsWithCounts,
       pagination: {
         page,
         limit,
@@ -70,10 +82,15 @@ export async function POST(request: NextRequest) {
   try {
     await connectDB()
     
-    // Require authentication for creating posts
     const user = getAuthUser(request)
     if (!user) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
+    }
+    
+    // Check for suspicious activity
+    const isSuspicious = await checkSuspiciousActivity(user.id, 'post_create')
+    if (isSuspicious) {
+      return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 })
     }
     
     const body = await request.json()
@@ -90,7 +107,19 @@ export async function POST(request: NextRequest) {
     await post.save()
     await post.populate('author', 'name username avatar reputation badges')
 
-    // Update user reputation
+    // Log security event
+    const clientInfo = getClientInfo(request)
+    await logSecurityEvent({
+      userId: user.id,
+      action: 'post_create',
+      details: {
+        ...clientInfo,
+        resource: post._id.toString(),
+        metadata: { category, title: title.substring(0, 50) }
+      },
+      severity: 'low'
+    })
+
     await User.findByIdAndUpdate(user.id, { $inc: { reputation: 5 } })
 
     return NextResponse.json(post, { status: 201 })

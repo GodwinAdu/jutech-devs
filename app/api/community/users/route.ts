@@ -9,6 +9,18 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const limit = parseInt(searchParams.get('limit') || '10')
     const sort = searchParams.get('sort') || 'reputation'
+    const timeframe = searchParams.get('timeframe') || 'all'
+
+    let dateFilter = {}
+    if (timeframe === 'week') {
+      const weekAgo = new Date()
+      weekAgo.setDate(weekAgo.getDate() - 7)
+      dateFilter = { lastActive: { $gte: weekAgo } }
+    } else if (timeframe === 'month') {
+      const monthAgo = new Date()
+      monthAgo.setMonth(monthAgo.getMonth() - 1)
+      dateFilter = { lastActive: { $gte: monthAgo } }
+    }
 
     const sortOptions: any = {}
     switch (sort) {
@@ -22,8 +34,8 @@ export async function GET(request: NextRequest) {
         sortOptions.reputation = -1
     }
 
-    const users = await User.find({})
-      .select('name username avatar reputation badges location')
+    const users = await User.find(dateFilter)
+      .select('name username email avatar reputation badges location')
       .sort(sortOptions)
       .limit(limit)
       .lean()

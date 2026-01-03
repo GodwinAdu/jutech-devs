@@ -61,23 +61,32 @@ const ReplySchema = new mongoose.Schema({
   editedAt: Date
 }, { timestamps: true })
 
-const EventSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  description: { type: String, required: true },
-  type: { type: String, required: true, enum: ['webinar', 'workshop', 'hackathon', 'meetup', 'conference'] },
-  date: { type: Date, required: true },
-  duration: { type: Number, required: true },
-  host: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  attendees: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-  maxAttendees: { type: Number },
-  tags: [{ type: String }],
-  image: { type: String, default: '' },
-  meetingLink: { type: String, default: '' },
-  status: { type: String, enum: ['upcoming', 'live', 'completed'], default: 'upcoming' },
-  featured: { type: Boolean, default: false }
+const NewsletterSchema = new mongoose.Schema({
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    lowercase: true,
+    trim: true
+  },
+  status: {
+    type: String,
+    enum: ['active', 'unsubscribed'],
+    default: 'active'
+  },
+  subscribedAt: {
+    type: Date,
+    default: Date.now
+  },
+  unsubscribedAt: Date,
+  preferences: {
+    updates: { type: Boolean, default: true },
+    newsletters: { type: Boolean, default: true },
+    announcements: { type: Boolean, default: true }
+  }
 }, { timestamps: true })
 
 export const User = mongoose.models.User || mongoose.model('User', UserSchema)
 export const Post = mongoose.models.Post || mongoose.model('Post', PostSchema)
 export const Reply = mongoose.models.Reply || mongoose.model('Reply', ReplySchema)
-export const Event = mongoose.models.Event || mongoose.model('Event', EventSchema)
+export const Newsletter = mongoose.models.Newsletter || mongoose.model('Newsletter', NewsletterSchema)

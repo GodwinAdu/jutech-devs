@@ -18,6 +18,8 @@ interface PostCardProps {
     category: string
     tags: string[]
     votes: number
+    upvoteCount: number
+    downvoteCount: number
     replies: number
     views: number
     solved: boolean
@@ -28,11 +30,12 @@ interface PostCardProps {
 
 export function PostCard({ post }: PostCardProps) {
   const { user } = useAuth()
-  const [votes, setVotes] = useState(post.votes)
-  const [userVote, setUserVote] = useState<'up' | 'down' | null>(null)
+  const [upvoteCount, setUpvoteCount] = useState(post.upvoteCount)
+  const [downvoteCount, setDownvoteCount] = useState(post.downvoteCount)
+  const [userVote, setUserVote] = useState<'upvote' | 'downvote' | null>(null)
   const [voting, setVoting] = useState(false)
 
-  const handleVote = async (type: 'up' | 'down') => {
+  const handleVote = async (type: 'upvote' | 'downvote') => {
     if (!user || voting) return
     
     setVoting(true)
@@ -40,12 +43,13 @@ export function PostCard({ post }: PostCardProps) {
       const response = await fetch(`/api/community/posts/${post.id}/vote`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type })
+        body: JSON.stringify({ voteType: type })
       })
       
       if (response.ok) {
         const data = await response.json()
-        setVotes(data.votes)
+        setUpvoteCount(data.post.upvoteCount)
+        setDownvoteCount(data.post.downvoteCount)
         setUserVote(data.userVote)
       }
     } catch (error) {
@@ -67,18 +71,19 @@ export function PostCard({ post }: PostCardProps) {
             <Button 
               size="sm" 
               variant="ghost" 
-              className={`h-8 w-8 p-0 ${userVote === 'up' ? 'bg-green-500/20 text-green-500' : 'hover:bg-green-500/20'}`}
-              onClick={() => handleVote('up')}
+              className={`h-8 w-8 p-0 ${userVote === 'upvote' ? 'bg-green-500/20 text-green-500' : 'hover:bg-green-500/20'}`}
+              onClick={() => handleVote('upvote')}
               disabled={!user || voting}
             >
               <ThumbsUp className="w-4 h-4" />
             </Button>
-            <span className="text-lg font-bold text-accent">{votes}</span>
+            <span className="text-sm font-bold text-green-600">{upvoteCount}</span>
+            <span className="text-sm font-bold text-red-600">{downvoteCount}</span>
             <Button 
               size="sm" 
               variant="ghost" 
-              className={`h-8 w-8 p-0 ${userVote === 'down' ? 'bg-red-500/20 text-red-500' : 'hover:bg-red-500/20'}`}
-              onClick={() => handleVote('down')}
+              className={`h-8 w-8 p-0 ${userVote === 'downvote' ? 'bg-red-500/20 text-red-500' : 'hover:bg-red-500/20'}`}
+              onClick={() => handleVote('downvote')}
               disabled={!user || voting}
             >
               <ThumbsDown className="w-4 h-4" />
@@ -109,6 +114,14 @@ export function PostCard({ post }: PostCardProps) {
 
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                <span className="flex items-center gap-1 text-green-600">
+                  <ThumbsUp className="w-4 h-4" />
+                  {upvoteCount}
+                </span>
+                <span className="flex items-center gap-1 text-red-600">
+                  <ThumbsUp className="w-4 h-4 rotate-180" />
+                  {downvoteCount}
+                </span>
                 <span className="flex items-center gap-1">
                   <MessageSquare className="w-4 h-4" />
                   {post.replies}

@@ -3,9 +3,38 @@
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { MessageCircle, Github, Linkedin } from "lucide-react"
+import { useState } from "react"
 
 export function Footer() {
   const currentYear = new Date().getFullYear()
+  const [email, setEmail] = useState('')
+  const [isSubscribing, setIsSubscribing] = useState(false)
+  const [message, setMessage] = useState('')
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!email) return
+
+    setIsSubscribing(true)
+    try {
+      const response = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      })
+
+      const data = await response.json()
+      setMessage(data.message || 'Successfully subscribed!')
+      if (response.ok) {
+        setEmail('')
+      }
+    } catch (error) {
+      setMessage('Failed to subscribe. Please try again.')
+    } finally {
+      setIsSubscribing(false)
+      setTimeout(() => setMessage(''), 3000)
+    }
+  }
 
   const footerLinks = {
     Product: [
@@ -144,16 +173,28 @@ export function Footer() {
         >
           <h3 className="text-xl font-bold mb-2">Stay Updated</h3>
           <p className="text-muted-foreground mb-4">Subscribe to our newsletter for the latest updates and insights.</p>
-          <div className="flex flex-col sm:flex-row gap-3">
+          <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3">
             <input
               type="email"
               placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
               className="flex-1 px-4 py-2 rounded-lg bg-background border border-border focus:border-accent outline-none transition-colors"
             />
-            <button className="px-6 py-2 rounded-lg bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transition-all whitespace-nowrap">
-              Subscribe
+            <button 
+              type="submit"
+              disabled={isSubscribing}
+              className="px-6 py-2 rounded-lg bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transition-all whitespace-nowrap disabled:opacity-50"
+            >
+              {isSubscribing ? 'Subscribing...' : 'Subscribe'}
             </button>
-          </div>
+          </form>
+          {message && (
+            <p className={`mt-2 text-sm ${message.includes('Failed') ? 'text-red-500' : 'text-green-500'}`}>
+              {message}
+            </p>
+          )}
         </motion.div>
 
         {/* Bottom Section */}

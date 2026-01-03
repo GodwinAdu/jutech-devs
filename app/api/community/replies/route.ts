@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import {connectDB} from '@/lib/mongodb'
-import { Reply, Post, User } from '@/lib/models/community'
+import { connectDB } from '@/lib/mongodb'
+import { Post, Reply, User } from '@/lib/models/community'
 import { getAuthUser } from '@/lib/auth-utils'
+import { logSecurityEvent, getClientInfo, checkSuspiciousActivity } from '@/lib/security-utils'
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,36 +13,45 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
     
-    const body = await request.json()
-    const { postId, content, parentId } = body
-
-    if (!postId || !content?.trim()) {
-      return NextResponse.json({ error: 'Post ID and content are required' }, { status: 400 })
+    // Check for suspicious activity
+    const isSuspicious = await checkSuspiciousActivity(user.id, 'reply_create')
+    if (isSuspicious) {
+      return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 })
     }
-
+    
+    const { postId, content, parentId } = await request.json()
+    
     const reply = new Reply({
-      content: content.trim(),
+      content,
       author: user.id,
       post: postId,
-      ...(parentId && { parentReply: parentId })
+      parentReply: parentId || undefined
     })
-
+    
     await reply.save()
-    await reply.populate('author', 'name username avatar reputation badges')
-
-    // Update post reply count and last reply
-    await Post.findByIdAndUpdate(postId, {
-      $inc: { replies: 1 },
-      lastReply: {
-        author: user.id,
-        createdAt: new Date()
-      }
+    await reply.populate('author', 'name username avatar')
+    
+    // Update post reply count
+    await Post.findByIdAndUpdate(postId, { $inc: { replies: 1 } })
+    
+    // Log security event
+    const clientInfo = getClientInfo(request)
+    await logSecurityEvent({
+      userId: user.id,
+      action: 'reply_create',
+      details: {
+        ...clientInfo,
+        resource: reply._id.toString(),
+        metadata: { 
+          postId, 
+          parentId,
+          contentLength: content.length 
+        }
+      },
+      severity: 'low'
     })
-
-    // Update user reputation
-    await User.findByIdAndUpdate(user.id, { $inc: { reputation: 2 } })
-
-    return NextResponse.json({ reply }, { status: 201 })
+    
+    return NextResponse.json(reply, { status: 201 })
   } catch (error) {
     console.error('Failed to create reply:', error)
     return NextResponse.json({ error: 'Failed to create reply' }, { status: 500 })

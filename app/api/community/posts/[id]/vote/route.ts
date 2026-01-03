@@ -2,12 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { connectDB } from '@/lib/mongodb'
 import { Post, User } from '@/lib/models/community'
 import { getAuthUser } from '@/lib/auth-utils'
+import { logSecurityEvent, getClientInfo, checkSuspiciousActivity } from '@/lib/security-utils'
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params
     await connectDB()
     
     const user = getAuthUser(request)
@@ -15,75 +14,85 @@ export async function POST(
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
     
-    const { type } = await request.json() // 'up' or 'down'
-    const { id: postId } = await params
+    // Check for suspicious voting activity
+    const isSuspicious = await checkSuspiciousActivity(user.id, 'vote')
+    if (isSuspicious) {
+      return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 })
+    }
     
-    const post = await Post.findById(postId)
+    const { voteType } = await request.json() // 'upvote' or 'downvote'
+    
+    const post = await Post.findById(id)
     if (!post) {
       return NextResponse.json({ error: 'Post not found' }, { status: 404 })
     }
-
+    
     const userId = user.id
     const hasUpvoted = post.upvotes.includes(userId)
     const hasDownvoted = post.downvotes.includes(userId)
-
-    let voteChange = 0
-    let reputationChange = 0
-
-    if (type === 'up') {
+    
+    let updateData: any = {}
+    
+    if (voteType === 'upvote') {
       if (hasUpvoted) {
         // Remove upvote
-        post.upvotes.pull(userId)
-        voteChange = -1
-        reputationChange = -1
+        updateData.$pull = { upvotes: userId }
       } else {
-        // Add upvote, remove downvote if exists
+        // Add upvote and remove downvote if exists
+        updateData.$addToSet = { upvotes: userId }
         if (hasDownvoted) {
-          post.downvotes.pull(userId)
-          voteChange = 2
-          reputationChange = 2
-        } else {
-          voteChange = 1
-          reputationChange = 1
+          updateData.$pull = { downvotes: userId }
         }
-        post.upvotes.push(userId)
       }
-    } else if (type === 'down') {
+    } else if (voteType === 'downvote') {
       if (hasDownvoted) {
         // Remove downvote
-        post.downvotes.pull(userId)
-        voteChange = 1
-        reputationChange = 1
+        updateData.$pull = { downvotes: userId }
       } else {
-        // Add downvote, remove upvote if exists
+        // Add downvote and remove upvote if exists
+        updateData.$addToSet = { downvotes: userId }
         if (hasUpvoted) {
-          post.upvotes.pull(userId)
-          voteChange = -2
-          reputationChange = -2
-        } else {
-          voteChange = -1
-          reputationChange = -1
+          updateData.$pull = { upvotes: userId }
         }
-        post.downvotes.push(userId)
       }
     }
-
-    post.votes += voteChange
-    await post.save()
-
-    // Update author reputation
-    if (reputationChange !== 0) {
-      await User.findByIdAndUpdate(post.author, { 
-        $inc: { reputation: reputationChange } 
-      })
-    }
-
-    return NextResponse.json({
-      votes: post.votes,
-      userVote: post.upvotes.includes(userId) ? 'up' : post.downvotes.includes(userId) ? 'down' : null
+    
+    const updatedPost = await Post.findByIdAndUpdate(id, updateData, { new: true })
+      .populate('author', 'name username avatar')
+    
+    // Calculate counts from arrays
+    const upvoteCount = updatedPost.upvotes.length
+    const downvoteCount = updatedPost.downvotes.length
+    const netVotes = upvoteCount - downvoteCount
+    
+    // Update the votes field
+    await Post.findByIdAndUpdate(id, { votes: netVotes })
+    
+    // Log security event
+    const clientInfo = getClientInfo(request)
+    await logSecurityEvent({
+      userId: user.id,
+      action: 'vote',
+      details: {
+        ...clientInfo,
+        resource: id,
+        metadata: { voteType, upvoteCount, downvoteCount }
+      },
+      severity: 'low'
+    })
+    
+    return NextResponse.json({ 
+      message: 'Vote updated successfully', 
+      post: {
+        ...updatedPost.toObject(),
+        upvoteCount,
+        downvoteCount
+      },
+      userVote: voteType === 'upvote' && !hasUpvoted ? 'upvote' : 
+                voteType === 'downvote' && !hasDownvoted ? 'downvote' : null
     })
   } catch (error) {
-    console.error('Vote error:', error)
-    return NextResponse.json({ error: 'Failed to vote' }, { status: 500 })
+    console.error('Failed to update vote:', error)
+    return NextResponse.json({ error: 'Failed to update vote' }, { status: 500 })
   }
 }
