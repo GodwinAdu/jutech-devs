@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
+import { rateLimit } from "@/lib/rate-limit";
+import { sanitizeInput, detectSqlInjection, detectXSS, validateEmail } from "@/lib/security";
+import { validateCSRFToken } from "@/lib/csrf";
+import { securityHeaders } from "@/lib/security-headers";
 
 export const runtime = "nodejs";
 
@@ -47,13 +51,67 @@ const createThankYouTemplate = (name: string) => `
 
 export async function POST(request: NextRequest) {
   try {
-    const { name, email, message, subject } = await request.json();
+    // Apply rate limiting
+    const rateLimitResult = rateLimit(3, 60000)(request); // 3 requests per minute
+    if (rateLimitResult) {
+      return securityHeaders(rateLimitResult);
+    }
 
-    if (!name || !email || !message) {
-      return NextResponse.json(
-        { error: "Missing required fields" },
+    const { name, email, message, subject, company, phone, inquiryType } = await request.json();
+
+    // Validate CSRF token
+    const csrfToken = request.headers.get('x-csrf-token');
+    if (!csrfToken || !validateCSRFToken(csrfToken)) {
+      return securityHeaders(NextResponse.json(
+        { error: "Invalid security token" },
+        { status: 403 }
+      ));
+    }
+
+    // Validate required fields
+    if (!name || !email || !message || !subject || !inquiryType) {
+      return securityHeaders(NextResponse.json(
+        { error: "Please fill in all required fields" },
         { status: 400 }
-      );
+      ));
+    }
+
+    // Validate email format
+    if (!validateEmail(email)) {
+      return securityHeaders(NextResponse.json(
+        { error: "Please enter a valid email address" },
+        { status: 400 }
+      ));
+    }
+
+    // Sanitize inputs
+    const sanitizedData = {
+      name: sanitizeInput(name),
+      email: sanitizeInput(email),
+      message: sanitizeInput(message),
+      subject: sanitizeInput(subject),
+      company: company ? sanitizeInput(company) : '',
+      phone: phone ? sanitizeInput(phone) : '',
+      inquiryType: sanitizeInput(inquiryType)
+    };
+
+    // Security checks
+    const inputs = [sanitizedData.name, sanitizedData.message, sanitizedData.subject];
+    for (const input of inputs) {
+      if (detectSqlInjection(input) || detectXSS(input)) {
+        return securityHeaders(NextResponse.json(
+          { error: "Invalid input detected" },
+          { status: 400 }
+        ));
+      }
+    }
+
+    // Validate message length
+    if (sanitizedData.message.length < 10 || sanitizedData.message.length > 1000) {
+      return securityHeaders(NextResponse.json(
+        { error: "Message must be between 10 and 1000 characters" },
+        { status: 400 }
+      ));
     }
 
     if (
@@ -76,35 +134,75 @@ export async function POST(request: NextRequest) {
 
     await transporter.verify();
 
+    // Format inquiry type for display
+    const inquiryTypeLabels: Record<string, string> = {
+      general: "General Inquiry",
+      development: "Custom Development",
+      consultation: "Technical Consultation",
+      support: "Support & Maintenance",
+      partnership: "Partnership Opportunity"
+    };
+
+    const budgetLabels: Record<string, string> = {
+      "under-5k": "Under $5,000",
+      "5k-15k": "$5,000 - $15,000",
+      "15k-50k": "$15,000 - $50,000",
+      "50k-plus": "$50,000+",
+      "not-sure": "Not sure yet"
+    };
+
     // Send notification to admin
     await transporter.sendMail({
-      from: `${process.env.FROM_NAME || "Website"} <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
+      from: `${process.env.FROM_NAME || "Jutech Contact"} <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to: process.env.SMTP_USER,
       replyTo: email,
-      subject: subject?.slice(0, 120) || `Contact Form: ${name}`,
+      subject: `[${inquiryTypeLabels[inquiryType] || inquiryType}] ${subject.slice(0, 100)}`,
       html: `
-        <h2>New Contact Form Submission</h2>
-        <p><strong>Name:</strong> ${escapeHtml(name)}</p>
-        <p><strong>Email:</strong> ${escapeHtml(email)}</p>
-        <p><strong>Subject:</strong> ${escapeHtml(subject || "No subject")}</p>
-        <p><strong>Message:</strong></p>
-        <p>${escapeHtml(message)}</p>
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc;">
+          <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+            <h1 style="color: white; margin: 0; font-size: 24px;">New Contact Form Submission</h1>
+          </div>
+          <div style="background: white; padding: 30px; border-radius: 0 0 10px 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <div style="margin-bottom: 20px; padding: 15px; background-color: #f1f5f9; border-radius: 8px;">
+              <h2 style="color: #1e293b; margin: 0 0 15px 0; font-size: 18px;">Contact Information</h2>
+              <p style="margin: 5px 0; color: #475569;"><strong>Name:</strong> ${escapeHtml(name)}</p>
+              <p style="margin: 5px 0; color: #475569;"><strong>Email:</strong> ${escapeHtml(email)}</p>
+              ${company ? `<p style="margin: 5px 0; color: #475569;"><strong>Company:</strong> ${escapeHtml(company)}</p>` : ''}
+              ${phone ? `<p style="margin: 5px 0; color: #475569;"><strong>Phone:</strong> ${escapeHtml(phone)}</p>` : ''}
+            </div>
+            
+            <div style="margin-bottom: 20px; padding: 15px; background-color: #eff6ff; border-radius: 8px;">
+              <h2 style="color: #1e293b; margin: 0 0 15px 0; font-size: 18px;">Project Details</h2>
+              <p style="margin: 5px 0; color: #475569;"><strong>Inquiry Type:</strong> ${inquiryTypeLabels[inquiryType] || inquiryType}</p>
+              <p style="margin: 5px 0; color: #475569;"><strong>Subject:</strong> ${escapeHtml(subject)}</p>
+            </div>
+            
+            <div style="margin-bottom: 20px; padding: 15px; background-color: #f0fdf4; border-radius: 8px;">
+              <h2 style="color: #1e293b; margin: 0 0 15px 0; font-size: 18px;">Message</h2>
+              <p style="color: #475569; line-height: 1.6; white-space: pre-wrap;">${escapeHtml(message)}</p>
+            </div>
+            
+            <div style="text-align: center; margin-top: 30px;">
+              <a href="mailto:${email}" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 600;">Reply to ${escapeHtml(name)}</a>
+            </div>
+          </div>
+        </div>
       `,
     });
 
     // Send thank you email to sender
     await transporter.sendMail({
-      from: `${process.env.FROM_NAME || "JuTech Devs"} <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
+      from: `${process.env.FROM_NAME || "Jutech Team"} <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
       to: email,
-      subject: `Thank you for contacting JuTech Devs, ${name}!`,
+      subject: `Thank you for contacting Jutech, ${name}!`,
       html: createThankYouTemplate(escapeHtml(name)),
     });
 
-    return NextResponse.json({ message: "Email sent successfully" });
+    return NextResponse.json({ message: "Message sent successfully" });
   } catch (error) {
     console.error("Email error:", error);
     return NextResponse.json(
-      { error: "Failed to send email" },
+      { error: "Failed to send message. Please try again later." },
       { status: 500 }
     );
   }

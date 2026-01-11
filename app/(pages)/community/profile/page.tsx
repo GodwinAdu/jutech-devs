@@ -12,6 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Calendar, MapPin, Globe, Github, Twitter, Trophy, Star, Loader2 } from 'lucide-react'
 import { PostCard } from '@/components/community/community-cards'
 import Link from 'next/link'
+import { Skeleton } from '@/components/ui/skeleton'
 
 interface ProfileData {
   user: {
@@ -74,9 +75,95 @@ export default function ProfilePage() {
       <ProtectedRoute>
         <main className="min-h-screen bg-background">
           <Navigation />
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-8 h-8 animate-spin" />
-          </div>
+          <section className="pt-28">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="grid lg:grid-cols-3 gap-8">
+                {/* Profile Info Skeleton */}
+                <div className="lg:col-span-2">
+                  <Card className="p-8 mb-8">
+                    <div className="flex items-start gap-6 mb-6">
+                      <Skeleton className="w-24 h-24 rounded-full" />
+                      <div className="flex-1 space-y-3">
+                        <Skeleton className="h-8 w-48" />
+                        <Skeleton className="h-5 w-32" />
+                        <div className="flex gap-4">
+                          <Skeleton className="h-4 w-24" />
+                          <Skeleton className="h-4 w-20" />
+                        </div>
+                        <div className="flex gap-2">
+                          <Skeleton className="h-8 w-24" />
+                          <Skeleton className="h-8 w-20" />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="space-y-4">
+                      <Skeleton className="h-5 w-16" />
+                      <Skeleton className="h-4 w-full" />
+                      <Skeleton className="h-4 w-3/4" />
+                    </div>
+                  </Card>
+                  
+                  {/* Recent Posts Skeleton */}
+                  <Card className="p-8">
+                    <Skeleton className="h-6 w-32 mb-6" />
+                    <div className="space-y-4">
+                      {Array.from({ length: 3 }).map((_, i) => (
+                        <div key={i} className="p-4 border rounded-lg">
+                          <div className="flex items-start gap-3">
+                            <Skeleton className="h-10 w-10 rounded-full" />
+                            <div className="flex-1 space-y-2">
+                              <Skeleton className="h-5 w-3/4" />
+                              <div className="flex gap-2">
+                                <Skeleton className="h-4 w-16" />
+                                <Skeleton className="h-4 w-12" />
+                              </div>
+                              <div className="flex gap-4">
+                                <Skeleton className="h-4 w-8" />
+                                <Skeleton className="h-4 w-8" />
+                                <Skeleton className="h-4 w-8" />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </Card>
+                </div>
+
+                {/* Sidebar Skeleton */}
+                <div className="space-y-6">
+                  {/* Stats Skeleton */}
+                  <Card className="p-6">
+                    <Skeleton className="h-5 w-20 mb-4" />
+                    <div className="space-y-4">
+                      {Array.from({ length: 4 }).map((_, i) => (
+                        <div key={i} className="flex items-center justify-between">
+                          <Skeleton className="h-4 w-16" />
+                          <Skeleton className="h-4 w-12" />
+                        </div>
+                      ))}
+                    </div>
+                  </Card>
+
+                  {/* Badges Skeleton */}
+                  <Card className="p-6">
+                    <Skeleton className="h-5 w-16 mb-4" />
+                    <div className="space-y-3">
+                      {Array.from({ length: 2 }).map((_, i) => (
+                        <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-muted/30">
+                          <Skeleton className="h-8 w-8 rounded" />
+                          <div className="space-y-1">
+                            <Skeleton className="h-4 w-20" />
+                            <Skeleton className="h-3 w-32" />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </Card>
+                </div>
+              </div>
+            </div>
+          </section>
           <Footer />
         </main>
       </ProtectedRoute>
@@ -129,6 +216,10 @@ export default function ProfilePage() {
                             <Link href="/admin">Admin Dashboard</Link>
                           </Button>
                         )}
+                        {/* Debug: Show user role */}
+                        <div className="text-xs text-muted-foreground">
+                          Role: {user?.role || 'No role'}
+                        </div>
                       </div>
                     </div>
                   </div>

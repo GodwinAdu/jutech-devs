@@ -15,6 +15,9 @@ import { ProcessOverview } from "@/components/home/process-overview"
 import { LatestBlog } from "@/components/home/latest-blog"
 import { CTASection } from "@/components/home/cta-section"
 import { PlaygroundPreview } from "@/components/home/playground-preview"
+import { GitHubShowcase } from "@/components/home/github-showcase"
+import { DeveloperCommunity } from "@/components/home/developer-community"
+import { PerformanceBenchmarks } from "@/components/home/performance-benchmarks"
 
 export default function Home() {
   return (
@@ -23,11 +26,14 @@ export default function Home() {
       <HeroSection />
       <StatsMetrics />
       <WhyChooseUs />
+      <DeveloperToolsPreview />
+      <PerformanceBenchmarks />
+      <GitHubShowcase />
+      <PlaygroundPreview />
+      <DeveloperCommunity />
       <FeaturedProjects />
       <ProcessOverview />
       <SupportServices />
-      <DeveloperToolsPreview />
-      <PlaygroundPreview />
       <MobileAppsPreview />
       <TechStack />
       <ClientLogos />
