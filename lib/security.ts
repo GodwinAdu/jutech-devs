@@ -17,8 +17,36 @@ export function sanitizeHtml(html: string): string {
 }
 
 export function validateEmail(email: string): boolean {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  return emailRegex.test(email) && email.length <= 254
+  // Basic format validation
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+  if (!emailRegex.test(email) || email.length > 254) {
+    return false
+  }
+  
+  const [localPart, domain] = email.split('@')
+  
+  // Check for suspicious patterns in local part
+  if (localPart.length < 2 || /^[a-z]{6,}$/.test(localPart)) {
+    return false // Too short or all lowercase letters (like "dfsdfs")
+  }
+  
+  // Check for valid domain patterns
+  if (!domain || domain.length < 3) {
+    return false
+  }
+  
+  // Check for consecutive dots or invalid characters
+  if (domain.includes('..') || domain.startsWith('.') || domain.endsWith('.')) {
+    return false
+  }
+  
+  // Check for valid TLD (at least 2 characters)
+  const tld = domain.split('.').pop()
+  if (!tld || tld.length < 2) {
+    return false
+  }
+  
+  return true
 }
 
 export function validatePhone(phone: string): boolean {

@@ -3,11 +3,12 @@
 import type React from "react"
 
 import { motion } from "framer-motion"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { Mail, User, MessageSquare, Building, Phone, AlertCircle, CheckCircle } from "lucide-react"
+import { generateCSRFToken } from "@/lib/csrf"
 
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").max(50, "Name must be less than 50 characters"),
@@ -53,10 +54,18 @@ export function ContactForm() {
       })
       
       if (response.ok) {
+        const result = await response.json()
         setSubmitted(true)
         reset()
+        
+        // Show warning if email validation failed
+        if (result.warning === 'email_validation_failed') {
+          setError('Message sent, but please verify your email address. You may not receive our confirmation.')
+        }
+        
         setTimeout(() => {
           setSubmitted(false)
+          setError(null)
         }, 5000)
       } else {
         const errorData = await response.json()
